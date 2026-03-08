@@ -1,4 +1,4 @@
-## ClassiDesk [Project Link]
+## ClassiDesk
 
 ClassiDesk is an AI-powered ticket classification and management system for banking support operations that automatically routes customer tickets to the appropriate teams.
 
