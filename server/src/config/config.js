@@ -15,4 +15,10 @@ module.exports = {
     port: Number(getEnvVar("DB_PORT", 5432)),
   },
   JWT_SECRET: getEnvVar("JWT_SECRET"),
+  REDIS: {
+    url: getEnvVar("REDIS_URL"),
+    host: getEnvVar("REDIS_HOST", "127.0.0.1"),
+    port: Number(getEnvVar("REDIS_PORT", 6379)),
+    password: getEnvVar("REDIS_PASSWORD"),
+  },
 };

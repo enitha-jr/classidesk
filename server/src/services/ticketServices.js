@@ -1,6 +1,7 @@
 const db = require("../utils/connectdb");
-const axios = require("axios");
-const { analyzeTicket } = require("../controller/aiController");
+const fs = require("fs");
+const path = require("path");
+const { analyzeTicket, ruleBasedClassification } = require("./aiService");
 
 const getTeams = async () => {
   try {
@@ -10,104 +11,195 @@ const getTeams = async () => {
     return result.rows;
   } catch (err) {
     console.error("getTeams error:", err);
-    throw new Error("Failed to fetch teams");
   }
 };
 
-  const createTicketService = async (req) => {
-    try {
-      const userId = req.user.user_id;
-      const { ticket_title, ticket_desc, team } = req.body;
-      const filePath = req.file ? `/files/${req.file.filename}` : null;
+const getTeamIdByName = async (teamName) => {
+  try {
+    const result = await db.query(
+      "SELECT team_id FROM teams WHERE team_name = $1",
+      [teamName]
+    );
+    return result.rows[0]?.team_id || null;
+  } catch (err) {
+    console.error("getTeamIdByName error:", err);
+    return null;
+  }
+};
 
-      let aiResult = {};
+const createTicketService = async (req) => {
+
+  const client = await db.connect();
+
+  try {
+
+    /* =====================================================
+       STEP 1 → Extract Data
+    ===================================================== */
+
+    const userId = req.user?.user_id;
+
+    const {
+      ticket_title,
+      ticket_desc,
+      team_id
+    } = req.body;
+
+    const filePath = req.file
+      ? `/uploads/${req.file.filename}`
+      : null;
+
+    let predictedTeam = null;
+    let aiTeamId = null;
+    let finalTeamId = team_id;
+
+    /* =====================================================
+       STEP 2 → AI Classification (ONLY IF TEAM NOT SELECTED)
+    ===================================================== */
+
+    if (!team_id) {
+
+      predictedTeam = "General Support";
+
       try {
-        const aiResponse = await axios.post(
-          "http://127.0.0.1:5000/analyze",
-          { ticket_title, ticket_desc },
-          { timeout: 3000 }
+
+        const aiResult = await analyzeTicket(
+          ticket_title,
+          ticket_desc
         );
-        aiResult = aiResponse.data;
-        const confidence = aiResult?.team_confidence ?? 0;
-        console.log(aiResult);
-        if(confidence < 0.3){
-          console.log("low confidence");
-          aiResult = await analyzeTicket(ticket_title, ticket_desc);
-        }
-        
-      } catch (error) {
-        console.error("AI service failed:", error.message);
-        aiResult = await analyzeTicket(ticket_title, ticket_desc);
+
+        predictedTeam = aiResult?.team || "General Support";
+
+        console.log("AI Predicted Team:", predictedTeam);
+
+      } catch (err) {
+
+        console.warn("Gemini failed → using rule classifier");
+
+        const fallback = ruleBasedClassification(
+          ticket_title,
+          ticket_desc
+        );
+
+        predictedTeam = fallback?.team || "General Support";
+
+        console.log("Rule predicted team:", predictedTeam);
       }
 
-      const finalTeam = team || aiResult.team || "General";
-      const aiTeam = team ? null : aiResult.team || null;
-      const priority = aiResult.priority || "Medium";
-      const aiSummary = aiResult.summary || null;
+      aiTeamId = await getTeamIdByName(predictedTeam);
 
-      const sql = `
-        INSERT INTO tickets (
-          ticket_title,
-          ticket_desc,
-          team,
-          ai_team,
-          priority,
-          ai_summary,
-          status,
-          user_id,
-          attachment
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, 'Initiated', $7, $8)
-        RETURNING *
-      `;
+      finalTeamId = aiTeamId;
 
-      const values = [
+      if (!finalTeamId) {
+        finalTeamId = await getTeamIdByName("General Support");
+      }
+
+    } else {
+
+      finalTeamId = team_id;
+      aiTeamId = null;
+
+    }
+
+    /* =====================================================
+       STEP 3 → START TRANSACTION
+    ===================================================== */
+
+    await client.query("BEGIN");
+
+    const insertTicketQuery = `
+      INSERT INTO tickets (
         ticket_title,
         ticket_desc,
-        finalTeam,
-        aiTeam,
-        priority,
-        aiSummary,
-        userId,
-        filePath,
-      ];
+        team_id,
+        ai_team_id,
+        status,
+        user_id,
+        attachment
+      )
+      VALUES ($1,$2,$3,$4,'Initiated',$5,$6)
+      RETURNING *
+    `;
 
-      const result = await db.query(sql, values);
+    const ticketValues = [
+      ticket_title,
+      ticket_desc,
+      finalTeamId,
+      aiTeamId,
+      userId,
+      filePath
+    ];
 
-      if (result.rows.length) {
-        const ticketFlowSql = `
-          INSERT INTO ticket_flow (
-            ticket_id,
-            action,
-            from_team,
-            to_team,
-            action_by,
-            remarks
-          )
-          VALUES ($1, 'CREATED', NULL, $2, $3, 'Ticket created')
-        `;
+    const ticketResult = await client.query(
+      insertTicketQuery,
+      ticketValues
+    );
 
-        const flowValues = [
-          result.rows[0].ticket_id,
-          finalTeam,
-          userId,
-        ];
+    const createdTicket = ticketResult.rows[0];
 
-        await db.query(ticketFlowSql, flowValues);
-      }
+    /* =====================================================
+       STEP 4 → Ticket Flow Log
+    ===================================================== */
 
-      return result.rows[0];
-    } catch (err) {
-      console.error("createTicket error:", err);
-      throw new Error("Failed to create ticket");
-    }
+    await client.query(
+      `
+      INSERT INTO ticket_flow (
+        ticket_id,
+        action,
+        from_team_id,
+        to_team_id,
+        user_id,
+        remarks
+      )
+      VALUES ($1,'CREATED',NULL,$2,$3,'Ticket created')
+      `,
+      [
+        createdTicket.ticket_id,
+        finalTeamId,
+        userId
+      ]
+    );
+
+    /* =====================================================
+       STEP 5 → COMMIT
+    ===================================================== */
+
+    await client.query("COMMIT");
+
+    console.log("Ticket created successfully:", {
+      ticketId: createdTicket.ticket_id,
+      assignedTeam: finalTeamId,
+      aiTeam: aiTeamId
+    });
+
+    return createdTicket;
+
+  } catch (err) {
+
+    console.error("createTicketService Error:", err);
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
 };
 
 const getUserTicketService = async (req) => {
   try {
     const userId = req.user.user_id;
     const result = await db.query(
-      "SELECT * FROM tickets WHERE user_id = $1 ORDER BY created_at DESC",
+      `SELECT t.*, tm.team_name, tam.team_name as ai_team_name
+       FROM tickets t
+       LEFT JOIN teams tm ON t.team_id = tm.team_id
+       LEFT JOIN teams tam ON t.ai_team_id = tam.team_id
+       WHERE t.user_id = $1
+       ORDER BY t.created_at DESC`,
       [userId]
     );
     return result.rows;
@@ -117,40 +209,7 @@ const getUserTicketService = async (req) => {
   }
 };
 
-const getTicketByIdService = async (ticketId) => {
-  try {
-    const sql = "SELECT * FROM tickets WHERE ticket_id = $1";
-    const result = await db.query(sql, [ticketId]);
-    return result.rows[0] || null;
-  } catch (err) {
-    console.error("getTicketByIdService error:", err);
-    throw new Error("Failed to fetch ticket");
-  }
-};
 
-const getTicketFlowService = async (ticketId) => {
-  try {
-    const sql = `
-      SELECT 
-        flow_id,
-        ticket_id,
-        action,
-        from_team,
-        to_team,
-        action_by,
-        remarks,
-        created_at
-      FROM ticket_flow
-      WHERE ticket_id = $1
-      ORDER BY created_at ASC
-    `;
-    const result = await db.query(sql, [ticketId]);
-    return result.rows;
-  } catch (err) {
-    console.error("getTicketFlowService error:", err);
-    throw new Error("Failed to fetch ticket flow");
-  }
-};
 
 const deleteTicketService = async (ticketId) => {
   try {
@@ -181,95 +240,70 @@ const deleteTicketService = async (ticketId) => {
   }
 };
 
-const updateTicketStatusService = async (ticketId, action, team, remarks, userId) => {
-  try {
-    // Get current ticket
-    const ticketResult = await db.query(
-      "SELECT * FROM tickets WHERE ticket_id = $1",
-      [ticketId]
-    );
+const getAttachmentService = async (ticketId, userId) => {
 
-    if (!ticketResult.rows.length) {
-      throw new Error("Ticket not found");
-    }
+  const result = await db.query(
+    "SELECT attachment, user_id FROM tickets WHERE ticket_id = $1",
+    [ticketId]
+  );
 
-    const currentTicket = ticketResult.rows[0];
-
-    if (currentTicket.status === "Resolved") {
-      throw new Error("Cannot update a resolved ticket");
-    }
-
-    let newStatus;
-    let newTeam = currentTicket.team;
-    let flowAction;
-
-    if (action === "resolve") {
-      newStatus = "Resolved";
-      flowAction = "RESOLVED";
-    } else if (action === "forward") {
-      newStatus = "Forwarded";
-      newTeam = team;
-      flowAction = "FORWARDED";
-    } else {
-      throw new Error("Invalid action");
-    }
-
-    // Update ticket
-    const updateSql = `
-      UPDATE tickets
-      SET status = $1, team = $2, updated_at = NOW()
-      WHERE ticket_id = $3
-      RETURNING *
-    `;
-
-    const updateResult = await db.query(updateSql, [
-      newStatus,
-      newTeam,
-      ticketId,
-    ]);
-
-    // Add flow record
-    const flowSql = `
-      INSERT INTO ticket_flow (
-        ticket_id,
-        action,
-        from_team,
-        to_team,
-        action_by,
-        remarks
-      )
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *
-    `;
-
-    const flowValues = [
-      ticketId,
-      flowAction,
-      currentTicket.team,
-      newTeam,
-      userId,
-      remarks,
-    ];
-
-    await db.query(flowSql, flowValues);
-
-    return {
-      success: true,
-      ticket: updateResult.rows[0],
-      message: `Ticket ${action === "resolve" ? "resolved" : "forwarded"} successfully`,
-    };
-  } catch (err) {
-    console.error("updateTicketStatusService error:", err);
-    throw new Error(err.message || "Failed to update ticket status");
+  if (!result.rows.length) {
+    const err = new Error("Ticket not found");
+    err.statusCode = 404;
+    throw err;
   }
+
+  const ticket = result.rows[0];
+
+  // check if requester is admin
+  const adminCheck = await db.query(
+    "SELECT user_id FROM admins WHERE user_id = $1",
+    [userId]
+  );
+
+  const isAdmin = adminCheck.rows.length > 0;
+
+  if (ticket.user_id !== userId && !isAdmin) {
+    const err = new Error("Unauthorized");
+    err.statusCode = 403;
+    throw err;
+  }
+
+  const filePath = path.join(__dirname, "../../public", ticket.attachment);
+  const buffer = fs.readFileSync(filePath);
+
+  return {
+    buffer,
+    filename: path.basename(filePath),
+    mimeType: getMimeType(filePath)
+  };
+};
+
+const getMimeType = (filename) => {
+  const ext = path.extname(filename).toLowerCase();
+
+  const mimeTypes = {
+    ".pdf": "application/pdf",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".gif": "image/gif",
+    ".txt": "text/plain",
+    ".doc": "application/msword",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xls": "application/vnd.ms-excel",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".zip": "application/zip",
+  };
+
+  return mimeTypes[ext] || "application/octet-stream";
 };
 
 module.exports = {
   getTeams,
+  getTeamIdByName,
   createTicketService,
   getUserTicketService,
-  getTicketByIdService,
-  getTicketFlowService,
   deleteTicketService,
-  updateTicketStatusService,
+  getAttachmentService,
 };

@@ -6,8 +6,7 @@ import CreateTicket from "../pages/CreateTicket";
 
 import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
-
-import TicketCard from "../components/TicketCard";
+ 
 import TicketPage from "../pages/TicketPage";
 import FaqPage from "../pages/FaqPage";
 import ChatPage from "../pages/ChatPage";

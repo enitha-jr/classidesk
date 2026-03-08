@@ -13,16 +13,31 @@ import {
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import ticketService from "../services/ticketService";
+import adminService from "../services/adminService";
 
-const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
-  const { user } = useSelector((state) => state.auth);
+const TicketInfo = ({ ticket, teams, loading, navigate, refresh, fromFilter = "active", adminTeamId = null }) => {
+  const auth = useSelector((state) => state.auth);
 
-  const [showAdminActions, setShowAdminActions] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState("");
   const [remarks, setRemarks] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleViewAttachment = async (e) => {
+    e.preventDefault();
+
+    try {
+      const attachment = await ticketService.getAttachment(ticket.ticket_id);
+      const blob = new Blob([attachment.data], { type: attachment.mimeType });
+      const fileURL = URL.createObjectURL(blob);
+      window.open(fileURL, '_blank');
+    } catch (error) {
+      if (error.response?.status !== 401) {
+        toast.error("Failed to load attachment");
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -48,7 +63,10 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
       setDeleting(true);
       await ticketService.deleteTicket(ticket.ticket_id);
       toast.success("Ticket deleted successfully");
-      navigate(-1);
+      const dashboardPath = auth?.role === "admin" 
+        ? `/classidesk/admin?filter=${fromFilter}` 
+        : `/classidesk/dashboard`;
+      navigate(dashboardPath);
     } catch (err) {
       toast.error("Failed to delete ticket");
     } finally {
@@ -65,23 +83,30 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
     try {
       setSubmitting(true);
 
-      await ticketService.updateTicketStatus(ticket.ticket_id, {
-        action: selectedAction,
-        team: selectedTeam || null,
-        remarks: remarks.trim()
-      });
+      if (selectedAction === "resolve") {
+        await adminService.resolveTicket(ticket.ticket_id, {
+          remarks: remarks.trim()
+        });
+      } else if (selectedAction === "forward") {
+        await adminService.forwardTicket(ticket.ticket_id, {
+          to_team_id: selectedTeam,
+          remarks: remarks.trim()
+        });
+      }
 
       toast.success(
-        `Ticket ${
-          selectedAction === "resolve" ? "resolved" : "forwarded"
+        `Ticket ${selectedAction === "resolve" ? "resolved" : "forwarded"
         } successfully`
       );
 
-      setShowAdminActions(false);
       setSelectedAction(null);
       setSelectedTeam("");
       setRemarks("");
-      refresh();
+      
+      const dashboardPath = auth?.role === "admin" 
+        ? `/classidesk/admin?filter=${selectedAction === "resolve" ? "resolved" : "forwarded"}` 
+        : `/classidesk/dashboard`;
+      setTimeout(() => navigate(dashboardPath), 500);
 
     } catch (err) {
       toast.error("Failed to update ticket");
@@ -115,18 +140,8 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
     }
   };
 
-  const priorityColor = (priority) => {
-    switch (priority?.toLowerCase()) {
-      case "high":
-        return "bg-red-100 text-red-700 border-red-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "low":
-        return "bg-green-100 text-green-700 border-green-300";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-300";
-    }
-  };
+  console.log("ticket", ticket);
+  console.log("adminTeamId", adminTeamId);
 
   return (
     <>
@@ -154,7 +169,12 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
             )}
 
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                const dashboardPath = auth?.role === "admin" 
+                  ? `/classidesk/admin?filter=${fromFilter}` 
+                  : `/classidesk/dashboard`;
+                navigate(dashboardPath);
+              }}
               className="w-10 h-10 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
             >
               <X className="w-5 h-5" />
@@ -171,21 +191,19 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
           <div className="mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
             <div className="flex items-center gap-2 text-sm text-gray-700">
               <FileText className="w-4 h-4" />
-              <a
-                href={ticket.attachment}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+              <button
+                onClick={handleViewAttachment}
+                className="text-blue-600 hover:underline font-medium"
               >
                 View Attachment
-              </a>
+              </button>
             </div>
           </div>
         )}
       </div>
 
       {/* Info Boxes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <InfoBox
           icon={<AlertCircle className="w-5 h-5" />}
           label="Status"
@@ -200,22 +218,9 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
           }
         />
         <InfoBox
-          icon={<AlertCircle className="w-5 h-5" />}
-          label="Priority"
-          value={
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium border ${priorityColor(
-                ticket.priority
-              )}`}
-            >
-              {ticket.priority}
-            </span>
-          }
-        />
-        <InfoBox
           icon={<Users className="w-5 h-5" />}
-          label="Assigned To"
-          value={ticket.team || ticket.ai_team || "Unassigned"}
+          label="Created By"
+          value={ticket.user_name || "Unknown"}
         />
         <InfoBox
           icon={<Calendar className="w-5 h-5" />}
@@ -225,23 +230,96 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh }) => {
       </div>
 
       {/* Admin Actions */}
-      {user?.role === "admin" && ticket.status !== "Resolved" && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Admin Actions
-          </h3>
+      {auth?.role === "admin" && ticket.status !== "Resolved" && ticket.team_id === adminTeamId && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Admin Actions
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedAction("resolve")}
+                className={`inline-flex items-center gap-2 px-4 py-1 rounded-md border-2 transition-colors ${
+                  selectedAction === "resolve"
+                    ? "bg-green-100 text-green-700 border-green-300"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <CheckCircle className="w-4 h-4" />
+                Resolve
+              </button>
+              <button
+                onClick={() => setSelectedAction("forward")}
+                className={`inline-flex items-center gap-2 px-4 py-1 rounded-md border-2 transition-colors ${
+                  selectedAction === "forward"
+                    ? "bg-orange-100 text-orange-700 border-orange-300"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <Send className="w-4 h-4" />
+                Forward
+              </button>
+            </div>
+          </div>
 
-          {!showAdminActions ? (
-            <button
-              onClick={() => setShowAdminActions(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-            >
-              Take Action
-            </button>
-          ) : (
-            // 👇 (Keep your full admin block exactly same as original here)
-            // I am stopping here because it's identical to your original code.
-            null
+          {selectedAction && (
+            <div className="space-y-4 pt-4">
+              {/* Team Selection */}
+              {selectedAction === "forward" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Team
+                  </label>
+                  <select
+                    value={selectedTeam}
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    className="w-full md:w-72 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Choose a team</option>
+                    {teams?.map((team) => (
+                      <option key={team.team_id} value={team.team_id}>
+                        {team.team_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {/* Remarks */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Remarks
+                </label>
+                <textarea
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  rows={3}
+                  placeholder="Enter action remarks..."
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              {/* Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAdminAction}
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#688ed4] hover:bg-[#7fa8f2] text-white rounded-md transition-colors disabled:opacity-50"
+                >
+                  {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Submit
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedAction(null);
+                    setSelectedTeam("");
+                    setRemarks("");
+                  }}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}

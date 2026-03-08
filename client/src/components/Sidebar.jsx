@@ -4,7 +4,8 @@ import { GoPlusCircle } from "react-icons/go";
 import { HiOutlineQuestionMarkCircle } from "react-icons/hi";
 import { RiRobot3Line } from "react-icons/ri";
 import { useSelector, useDispatch } from "react-redux";
-import { setAuth } from "../store/authSlice";
+import { clearAuth } from "../store/authSlice";
+import chatServices from "../services/chatServices";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -14,11 +15,16 @@ const Sidebar = () => {
   const linkStyle =
     "flex items-center gap-3 px-4 py-2 rounded-lg transition font-medium";
 
-  function handleLogout() {
-    dispatch(setAuth({}));
+  async function handleLogout() {
+    try {
+      await chatServices.clearChatHistory();
+    } catch (error) {
+      console.warn("Failed to clear chat history during logout:", error);
+    }
+
+    dispatch(clearAuth());
     localStorage.removeItem("token");
     navigate("/");
-    
   }
 
   return (

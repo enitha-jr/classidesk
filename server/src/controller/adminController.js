@@ -1,80 +1,94 @@
-const db = require("../utils/connectdb");
+const adminService = require("../services/adminService");
 
 const getTeamTickets = async (req, res) => {
   try {
     const adminId = req.user.user_id;
+    const tickets = await adminService.getTeamTicketsService(adminId);
+    res.json(tickets);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to fetch team tickets" });
+  }
+};
 
-    const teamResult = await db.query(
-      `SELECT t.team_name
-       FROM admins a
-       JOIN teams t ON a.team_id = t.team_id
-       WHERE a.user_id = $1`,
-      [adminId]
-    );
+const getTicketById = async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const ticket = await adminService.getTicketByIdService(ticketId);
+    
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+    
+    res.json(ticket);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to fetch ticket" });
+  }
+};
 
-    if (!teamResult.rows.length) {
-      return res.status(403).json({ message: "No team assigned" });
+const getTicketFlow = async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const flow = await adminService.getTicketFlowService(ticketId);
+    res.json(flow);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to fetch ticket flow" });
+  }
+};
+
+const resolveTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const { remarks } = req.body;
+    const userId = req.user.user_id;
+
+    if (!remarks || remarks.trim() === "") {
+      return res.status(400).json({ message: "Remarks are required" });
     }
 
-    const teamName = teamResult.rows[0].team_name;
-
-    const result = await db.query(
-      `SELECT t.*, u.username, u.email
-       FROM tickets t
-       JOIN users u ON t.user_id = u.user_id
-       WHERE t.team = $1
-       ORDER BY t.created_at DESC`,
-      [teamName]
+    const result = await adminService.resolveTicketService(
+      ticketId,
+      remarks,
+      userId
     );
 
-    res.json(result.rows);
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch team tickets" });
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to resolve ticket" });
   }
 };
 
 const forwardTicket = async (req, res) => {
-  const { ticketId } = req.params;
-  const { from_team, to_team, action_by, remarks } = req.body;
+  try {
+    const { ticketId } = req.params;
+    const { to_team_id, remarks } = req.body;
+    const userId = req.user.user_id;
 
-  await db.query(
-    `UPDATE tickets SET team=$1, status='forwarded', updated_at=NOW()
-     WHERE ticket_id=$2`,
-    [to_team, ticketId]
-  );
+    if (!remarks || remarks.trim() === "") {
+      return res.status(400).json({ message: "Remarks are required" });
+    }
 
-  await db.query(
-    `INSERT INTO ticket_flow
-     (ticket_id, action, from_team, to_team, action_by, remarks)
-     VALUES ($1,'FORWARDED',$2,$3,$4,$5)`,
-    [ticketId, from_team, to_team, action_by, remarks || ""]
-  );
+    const result = await adminService.forwardTicketService(
+      ticketId,
+      to_team_id,
+      remarks,
+      userId
+    );
 
-  res.json({ message: "Ticket forwarded" });
-};
-
-const resolveTicket = async (req, res) => {
-  const { ticketId } = req.params;
-  const { action_by } = req.body;
-
-  await db.query(
-    `UPDATE tickets SET status='resolved', updated_at=NOW()
-     WHERE ticket_id=$1`,
-    [ticketId]
-  );
-
-  await db.query(
-    `INSERT INTO ticket_flow
-     (ticket_id, action, action_by)
-     VALUES ($1,'RESOLVED',$2)`,
-    [ticketId, action_by]
-  );
-
-  res.json({ message: "Ticket resolved" });
+    res.json(result);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to forward ticket" });
+  }
 };
 
 module.exports = {
   getTeamTickets,
-  forwardTicket,
+  getTicketById,
+  getTicketFlow,
   resolveTicket,
+  forwardTicket,
 };

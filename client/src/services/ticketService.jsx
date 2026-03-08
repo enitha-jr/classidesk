@@ -30,25 +30,9 @@ const getUserTickets = async () => {
   }
 };
 
-const getTicketById = async (id) => {
-  try {
-    const response = await apiInstance.get(`/tickets/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching ticket:", error);
-    throw error;
-  }
-};
 
-const getTicketFlow = async (ticketId) => {
-  try {
-    const response = await apiInstance.get(`/tickets/${ticketId}/flow`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching ticket flow:", error);
-    throw error;
-  }
-};
+
+
 
 const deleteTicket = async (id) => {
   try {
@@ -60,12 +44,20 @@ const deleteTicket = async (id) => {
   }
 };
 
-const updateTicketStatus = async (id, payload) => {
+
+
+const getAttachment = async (ticketId) => {
   try {
-    const response = await apiInstance.put(`/tickets/${id}/status`, payload);
-    return response.data;
+    const response = await apiInstance.get(`/tickets/${ticketId}/attachment`, {
+      responseType: 'arraybuffer'
+    });
+    return {
+      data: response.data,
+      mimeType: response.headers['content-type'] || 'application/octet-stream',
+      filename: response.headers['content-disposition']?.split('filename="')[1]?.split('"')[0] || 'attachment'
+    };
   } catch (error) {
-    console.error("Error updating ticket status:", error);
+    console.error("Error fetching attachment:", error);
     throw error;
   }
 };
@@ -74,10 +66,8 @@ const ticketService = {
   listTeams,
   createTicket,
   getUserTickets,
-  getTicketById,
-  getTicketFlow,
   deleteTicket,
-  updateTicketStatus,
+  getAttachment,
 };
 
 export default ticketService;

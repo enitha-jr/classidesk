@@ -11,12 +11,21 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid' });
         }
         const user = result.rows[0];
+        if(user.role === 'admin') {
+            const teamResult = await db.query(
+                `SELECT team_id FROM admins WHERE user_id = $1`,
+                [user.user_id]
+            );
+            user.team_id = teamResult.rows[0]?.team_id || null;
+        }
+
         const token = jwt.sign(
             {
                 user_id: user.user_id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
+                team_id: user.team_id || null,
             },
             JWT_SECRET,
             { expiresIn: '1h' }
@@ -28,6 +37,7 @@ const login = async (req, res) => {
             username: user.username,
             email: user.email,
             role: user.role,
+            team_id: user.team_id || null,
         });
 
     } catch (error) {

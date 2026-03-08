@@ -30,33 +30,6 @@ const getUserTickets = async (req, res) => {
   }
 };
 
-const getTicketById = async (req, res) => {
-  try {
-    const ticketId = req.params.id;
-    const ticket = await ticketServices.getTicketByIdService(ticketId);
-    
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
-    }
-    
-    res.json(ticket);
-  } catch (err) {
-    console.error("getTicketById error:", err);
-    res.status(500).json({ message: "Failed to fetch ticket" });
-  }
-};
-
-const getTicketFlow = async (req, res) => {
-  try {
-    const ticketId = req.params.id;
-    const flow = await ticketServices.getTicketFlowService(ticketId);
-    res.json(flow);
-  } catch (err) {
-    console.error("getTicketFlow error:", err);
-    res.status(500).json({ message: "Failed to fetch ticket flow" });
-  }
-};
-
 const deleteTicket = async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -70,39 +43,20 @@ const deleteTicket = async (req, res) => {
   }
 };
 
-const updateTicketStatus = async (req, res) => {
+const getAttachment = async (req, res) => {
   try {
     const ticketId = req.params.id;
-    const { action, team, remarks } = req.body;
     const userId = req.user.user_id;
 
-    // Validate input
-    if (!action || !remarks) {
-      return res.status(400).json({ 
-        message: "Action and remarks are required" 
-      });
-    }
+    const fileData = await ticketServices.getAttachmentService(ticketId, userId);
 
-    if (action === "forward" && !team) {
-      return res.status(400).json({ 
-        message: "Team is required for forwarding" 
-      });
-    }
-
-    const result = await ticketServices.updateTicketStatusService(
-      ticketId,
-      action,
-      team,
-      remarks,
-      userId
-    );
-
-    res.json(result);
+    res.setHeader('Content-Type', fileData.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileData.filename}"`);
+    res.setHeader('Content-Length', fileData.buffer.length);
+    res.send(fileData.buffer);
   } catch (err) {
-    console.error("updateTicketStatus error:", err);
-    res.status(500).json({ 
-      message: err.message || "Failed to update ticket status" 
-    });
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message || "Failed to fetch attachment" });
   }
 };
 
@@ -110,8 +64,6 @@ module.exports = {
   listTeams,
   createTicket,
   getUserTickets,
-  getTicketById,
-  getTicketFlow,
+  getAttachment,
   deleteTicket,
-  updateTicketStatus,
 };

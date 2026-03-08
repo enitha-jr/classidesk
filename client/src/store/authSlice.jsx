@@ -8,6 +8,7 @@ const authSlice = createSlice({
         username: null,
         email: null,
         role: null,
+        team_id: null,
         exp: null,
     },
     reducers: {
@@ -17,6 +18,7 @@ const authSlice = createSlice({
             state.username = action.payload.username
             state.email = action.payload.email
             state.role = action.payload.role
+            state.team_id = action.payload.team_id || null
             state.exp = action.payload.exp
         },
         clearAuth: () => {
@@ -26,6 +28,7 @@ const authSlice = createSlice({
                 username: null,
                 email: null,
                 role: null,
+                team_id: null,
                 exp: null,
             };
         }
