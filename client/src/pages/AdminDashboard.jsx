@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Loader2, Inbox, Calendar, Users, ChevronRight } from "lucide-react";
+import { Loader2, Inbox, Calendar, Users } from "lucide-react";
 
 import adminService from "../services/adminService";
 import DashboardHeader from "../components/DashHeader";
 import DashboardStats from "../components/DashStats";
+import Pagination from "../components/Pagination";
+
+const TICKETS_PER_PAGE = 5;
 
 const emptyTicketGroups = {
   active: [],
@@ -20,9 +23,11 @@ const AdminDashboard = () => {
   const auth = useSelector((state) => state.auth);
   const adminId = auth?.user_id;
   const adminRole = auth?.role;
+  const teamName = auth?.team_name;
 
   const [ticketGroups, setTicketGroups] = useState(emptyTicketGroups);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   
   const urlFilter = searchParams.get("filter");
   const initialFilter = ["active", "forwarded", "resolved"].includes(urlFilter) ? urlFilter : "active";
@@ -34,6 +39,10 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     setSearchParams({ filter }, { replace: true });
+  }, [filter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
   }, [filter]);
 
   const fetchTickets = async () => {
@@ -69,13 +78,37 @@ const AdminDashboard = () => {
 
   const filteredTickets = ticketGroups[filter] || [];
 
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredTickets.length / TICKETS_PER_PAGE);
+  }, [filteredTickets.length]);
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedTickets = useMemo(() => {
+    const start = (currentPage - 1) * TICKETS_PER_PAGE;
+    return filteredTickets.slice(start, start + TICKETS_PER_PAGE);
+  }, [filteredTickets, currentPage]);
+
+  const handlePageChange = (page) => {
+    if (totalPages === 0) {
+      setCurrentPage(1);
+      return;
+    }
+    const safePage = Math.max(1, Math.min(page, totalPages));
+    setCurrentPage(safePage);
+  };
+
   return (
-    <div className="min-h-screen bg-[#eef4ff] py-8 px-4">
+    <div className="min-h-screen bg-[#eef4ff] py-3 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
         <DashboardHeader
-          title="Team Dashboard"
+          title={`Team Dashboard${teamName ? ` - ${teamName}` : ""}`}
           subtitle={adminRole === "admin" ? "Admin View" : "Support View"}
           filter={filter}
           setFilter={setFilter}
@@ -97,7 +130,7 @@ const AdminDashboard = () => {
             <Loader2 className="h-6 w-6 animate-spin mb-3" />
             <p className="text-sm font-medium">Loading tickets…</p>
           </div>
-        ) : filteredTickets.length === 0 ? (
+        ) : paginatedTickets.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg border border-gray-200">
             <Inbox className="h-10 w-10 text-gray-300 mb-3" />
             <p className="text-gray-500 font-medium">No tickets to display</p>
@@ -105,7 +138,7 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredTickets.map((ticket) => {
+            {paginatedTickets.map((ticket) => {
 
               const formattedDate = new Date(ticket.created_at).toLocaleDateString(
                 "en-US",
@@ -179,6 +212,12 @@ const AdminDashboard = () => {
             })}
           </div>
         )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
 
       </div>
     </div>

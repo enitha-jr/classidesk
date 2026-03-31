@@ -1,25 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Loader2, Inbox, Calendar, Users, ChevronRight, Paperclip, Trash2 } from "lucide-react";
+import { Loader2, Inbox, Calendar, Users, Paperclip, Trash2 } from "lucide-react";
 
 import ticketService from "../services/ticketService";
 
 import DashboardHeader from "../components/DashHeader";
+import Pagination from "../components/Pagination";
+
+const TICKETS_PER_PAGE = 5;
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const userData = useSelector((state) => state.auth);
-  const userId = userData?.user_id;
 
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("active");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchTickets();
   }, [userData]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
 
   const fetchTickets = async () => {
     try {
@@ -34,20 +39,6 @@ const Dashboard = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Status color
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "initiated":
-        return "bg-blue-100 text-blue-700";
-      case "forwarded":
-        return "bg-orange-100 text-orange-700";
-      case "resolved":
-        return "bg-green-100 text-green-700";
-      default:
-        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -83,14 +74,51 @@ const Dashboard = () => {
   };
 
   // Filter tickets
-  const filteredTickets = tickets.filter((ticket) => {
-    const status = ticket.status?.toLowerCase();
-    if (filter === "active") return status === "initiated" || status === "forwarded";
-    return status === filter;
-  });
+  const filteredTickets = useMemo(() => {
+    return tickets.filter((ticket) => {
+      const status = ticket.status?.toLowerCase();
+      if (filter === "active") return status === "initiated" || status === "forwarded";
+      return status === filter;
+    });
+  }, [tickets, filter]);
+
+  const activeCount = useMemo(() => {
+    return tickets.filter((ticket) => {
+      const status = ticket.status?.toLowerCase();
+      return status === "initiated" || status === "forwarded";
+    }).length;
+  }, [tickets]);
+
+  const resolvedCount = useMemo(() => {
+    return tickets.filter((ticket) => ticket.status?.toLowerCase() === "resolved").length;
+  }, [tickets]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredTickets.length / TICKETS_PER_PAGE);
+  }, [filteredTickets.length]);
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedTickets = useMemo(() => {
+    const start = (currentPage - 1) * TICKETS_PER_PAGE;
+    return filteredTickets.slice(start, start + TICKETS_PER_PAGE);
+  }, [filteredTickets, currentPage]);
+
+  const handlePageChange = (page) => {
+    if (totalPages === 0) {
+      setCurrentPage(1);
+      return;
+    }
+    const safePage = Math.max(1, Math.min(page, totalPages));
+    setCurrentPage(safePage);
+  };
 
   return (
-    <div className="min-h-screen bg-[#eef4ff] py-8 px-4">
+    <div className="min-h-screen bg-[#eef4ff] py-3 px-4">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -99,6 +127,10 @@ const Dashboard = () => {
           filter={filter}
           setFilter={setFilter}
           filters={["active", "resolved"]}
+          filterLabels={{
+            active: `Active Tickets (${activeCount})`,
+            resolved: `Resolved (${resolvedCount})`,
+          }}
           showCreateButton={true}
           createPath="/classidesk/create-ticket"
         />
@@ -109,7 +141,7 @@ const Dashboard = () => {
             <Loader2 className="h-6 w-6 animate-spin mb-3" />
             <p className="text-sm font-medium">Loading tickets…</p>
           </div>
-        ) : filteredTickets.length === 0 ? (
+        ) : paginatedTickets.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg border border-gray-200">
             <Inbox className="h-10 w-10 text-gray-300 mb-3" />
             <p className="text-gray-500 font-medium">No tickets found</p>
@@ -117,7 +149,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredTickets.map((ticket) => (
+            {paginatedTickets.map((ticket) => (
               <div
                 key={ticket.ticket_id}
                 role="button"
@@ -164,12 +196,10 @@ const Dashboard = () => {
                         <Calendar className="h-4 w-4" />
                       </span>
                     </div>
-
-
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t flex justify-between border-gray-100">
+                <div className="mt-4 pt-3 border-t flex justify-between border-gray-200">
                   {ticket.attachment ? (
                     <button
                       onClick={(e) => handleViewAttachment(e, ticket.ticket_id)}
@@ -198,6 +228,12 @@ const Dashboard = () => {
             ))}
           </div>
         )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
 
       </div>
     </div>

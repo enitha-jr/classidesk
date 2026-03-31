@@ -108,10 +108,10 @@ function ChatPage() {
         </div>
         <div>
           <p className="text-white font-semibold text-base leading-tight">
-            Hi {auth?.username} 👋
+            Hi {auth?.username}
           </p>
           <p className="text-blue-100 text-sm leading-tight">
-            I'm Simba — your bank support assistant
+            I'm Simba - your bank support assistant
           </p>
         </div>
         {/* <div className="ml-auto flex items-center gap-1.5">

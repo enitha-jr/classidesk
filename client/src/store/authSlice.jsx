@@ -9,8 +9,9 @@ const authSlice = createSlice({
         email: null,
         role: null,
         team_id: null,
+        team_name : null,
         exp: null,
-    },
+    },  
     reducers: {
         setAuth: (state, action) => {
             state.token = action.payload.token
@@ -19,6 +20,7 @@ const authSlice = createSlice({
             state.email = action.payload.email
             state.role = action.payload.role
             state.team_id = action.payload.team_id || null
+            state.team_name = action.payload.team_name || null
             state.exp = action.payload.exp
         },
         clearAuth: () => {
@@ -29,6 +31,7 @@ const authSlice = createSlice({
                 email: null,
                 role: null,
                 team_id: null,
+                team_name: null,
                 exp: null,
             };
         }

@@ -17,7 +17,6 @@ from nltk.stem import WordNetLemmatizer
 # LOAD MODELS
 # ----------------------------
 team_model = joblib.load("team_model.pkl")
-priority_model = joblib.load("priority_model.pkl")
 vectorizer = joblib.load("vectorizer.pkl")
 
 # ----------------------------
@@ -74,19 +73,15 @@ def analyze_ticket(ticket: TicketRequest):
 
     # Predict
     team_pred = team_model.predict(vectorized)[0]
-    priority_pred = priority_model.predict(vectorized)[0]
 
     # Confidence
     team_conf = float(max(team_model.predict_proba(vectorized)[0]))
-    priority_conf = float(max(priority_model.predict_proba(vectorized)[0]))
 
     print("Api called")
 
     return {
         "team": team_pred,
-        "priority": priority_pred,
         "team_confidence": round(team_conf, 3),
-        "priority_confidence": round(priority_conf, 3)
     }
 
 # ----------------------------

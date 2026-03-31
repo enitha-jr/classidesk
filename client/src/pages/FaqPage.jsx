@@ -161,7 +161,7 @@ const FAQPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <div className="py-2 px-1">
+    <div className="py-2 px-1 bank-scrollbar">
       <div className="max-w-3xl mx-auto space-y-5">
 
         {/* Header */}

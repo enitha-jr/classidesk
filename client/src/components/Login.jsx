@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import authServices from "../services/authService";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../store/authSlice";
@@ -30,7 +31,7 @@ function Login() {
     const response = await authServices.login(loginData);
 
     if (!response) {
-      alert("Login failed. Please check your credentials.");
+      toast.error("Login failed. Please check your credentials.");
       return;
     }
 

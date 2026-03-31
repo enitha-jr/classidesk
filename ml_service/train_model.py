@@ -22,6 +22,7 @@ stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
 
 def preprocess_text(text):
+
     if pd.isnull(text):
         return ""
 
@@ -40,79 +41,63 @@ def preprocess_text(text):
     return " ".join(tokens)
 
 # ----------------------------
-# LOAD DATA
+# LOAD DATASET
 # ----------------------------
 df = pd.read_csv("dataset.csv")
-df = df.dropna(subset=["text", "team", "priority"])
+
+df = df.dropna(subset=["text", "team"])
 
 df["clean_text"] = df["text"].apply(preprocess_text)
 
-print("Team Distribution:")
+print("\nTeam Distribution:")
 print(df["team"].value_counts())
 
-print("\nPriority Distribution:")
-print(df["priority"].value_counts())
-
 # ----------------------------
-# TF-IDF
+# TF-IDF VECTORIZATION
 # ----------------------------
 vectorizer = TfidfVectorizer(
     max_features=7000,
-    ngram_range=(1, 2),
+    ngram_range=(1,2),
     min_df=2
 )
 
 X = vectorizer.fit_transform(df["clean_text"])
-
-y_team = df["team"]
-y_priority = df["priority"]
+y = df["team"]
 
 # ----------------------------
 # TRAIN TEST SPLIT
 # ----------------------------
-X_train, X_test, y_team_train, y_team_test = train_test_split(
-    X, y_team, test_size=0.2, random_state=42, stratify=y_team
-)
-
-_, _, y_priority_train, y_priority_test = train_test_split(
-    X, y_priority, test_size=0.2, random_state=42, stratify=y_priority
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
 )
 
 # ----------------------------
-# TEAM MODEL
+# TRAIN MODEL
 # ----------------------------
 team_model = LogisticRegression(
     max_iter=1000,
     class_weight="balanced"
 )
 
-team_model.fit(X_train, y_team_train)
-team_pred = team_model.predict(X_test)
+team_model.fit(X_train, y_train)
+
+# ----------------------------
+# EVALUATION
+# ----------------------------
+pred = team_model.predict(X_test)
 
 print("\n--- Team Prediction ---")
-print("Accuracy:", accuracy_score(y_team_test, team_pred))
-print("F1:", f1_score(y_team_test, team_pred, average="weighted"))
+print("Accuracy:", accuracy_score(y_test, pred))
+print("F1 Score:", f1_score(y_test, pred, average="weighted"))
 
 # ----------------------------
-# PRIORITY MODEL
-# ----------------------------
-priority_model = LogisticRegression(
-    max_iter=1000,
-    class_weight="balanced"
-)
-
-priority_model.fit(X_train, y_priority_train)
-priority_pred = priority_model.predict(X_test)
-
-print("\n--- Priority Prediction ---")
-print("Accuracy:", accuracy_score(y_priority_test, priority_pred))
-print("F1:", f1_score(y_priority_test, priority_pred, average="weighted"))
-
-# ----------------------------
-# SAVE MODELS
+# SAVE MODEL
 # ----------------------------
 joblib.dump(team_model, "team_model.pkl")
-joblib.dump(priority_model, "priority_model.pkl")
 joblib.dump(vectorizer, "vectorizer.pkl")
 
 print("\nModels Saved Successfully 🚀")

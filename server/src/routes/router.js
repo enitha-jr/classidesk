@@ -12,6 +12,7 @@ const { chatRateLimiter } = require("../middleware/chatRateLimiter");
 const upload = require("../middleware/uploadMiddleware");
 
 //---------------login----------------
+router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.post("/ai/classify", aiController.classifyTicket);
 
@@ -40,14 +41,10 @@ router.get("/tickets/:id/flow", adminController.getTicketFlow);
 router.put("/tickets/:ticketId/resolve", adminController.resolveTicket);
 router.put("/tickets/:ticketId/forward", adminController.forwardTicket);
 
-
-
 //---------------gemini----------------
 router.post("/chat", chatRateLimiter, upload.single("file"), chatController.getAIResponse);
 router.get("/chat/history", chatController.getChatHistoryByUser);
 router.delete("/chat/history", chatController.clearHistory);
-
-
 
 
 module.exports = router;

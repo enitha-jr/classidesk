@@ -48,10 +48,9 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="dashboard"
+          to={userData?.role === "admin" ? "admin" : "dashboard"}
           className={({ isActive }) =>
-            `${linkStyle} ${isActive ? "bg-white shadow-sm" : "hover:bg-white"
-            }`
+            `${linkStyle} ${isActive ? "bg-white shadow-sm" : "hover:bg-white"}`
           }
         >
           <VscGraph size={18} />

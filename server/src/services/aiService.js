@@ -1,4 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require("axios");
+
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://127.0.0.1:5000";
 
 /* =====================================================
    GEMINI SETUP
@@ -49,6 +52,30 @@ const ruleBasedClassification = (title, description) => {
   }
 
   return { team: "General Support" };
+};
+
+/* =====================================================
+   ML SERVICE CLASSIFIER
+===================================================== */
+
+const mlClassifier = async (title, description) => {
+
+  const response = await axios.post(
+    `${ML_SERVICE_URL}/analyze`,
+    { ticket_title: title, ticket_desc: description },
+    { timeout: 5000 }
+  );
+
+  const { team } = response.data;
+
+  if (!team || !TEAMS.includes(team)) {
+    throw new Error(`ML service returned invalid team: ${team}`);
+  }
+
+  console.log("ML Service predicted team:", team);
+
+  return { team, source: "ml" };
+
 };
 
 /* =====================================================
@@ -185,47 +212,44 @@ Return ONLY JSON.
 
 const analyzeTicket = async (title, description) => {
 
-
+  /* --- 1. Try ML Service --- */
   try {
 
+    const result = await mlClassifier(title, description);
+    return result;
 
-    const result = await geminiClassifier(title, description);
+  } catch (mlErr) {
 
-    return { ...result, source: "gemini" };
-
-  } catch (err) {
-
-    console.error("Gemini failed:", {
-      error: err.message,
-      stack: err.stack,
-      ticketTitle: title,
-      timestamp: new Date().toISOString()
-    });
-
-    console.log("Fallback → Rule Based Classification");
-
-    try {
-
-      const fallback = ruleBasedClassification(title, description);
-
-      return { ...fallback, source: "rule-based" };
-
-    } catch (fallbackErr) {
-
-      console.error("Rule-based classification failed:", {
-        error: fallbackErr.message,
-        stack: fallbackErr.stack,
-        timestamp: new Date().toISOString()
-      });
-
-      console.warn("All classifiers failed - Using default team");
-      return {
-        team: "General Support",
-        source: "default"
-      };
-    }
+    console.warn("ML service failed → falling back to Gemini:", mlErr.message);
 
   }
+
+  /* --- 2. Try Gemini --- */
+  try {
+
+    const result = await geminiClassifier(title, description);
+    return { ...result, source: "gemini" };
+
+  } catch (geminiErr) {
+
+    console.warn("Gemini failed → falling back to rule-based:", geminiErr.message);
+
+  }
+
+  /* --- 3. Rule-based fallback --- */
+  try {
+
+    const fallback = ruleBasedClassification(title, description);
+    return { ...fallback, source: "rule-based" };
+
+  } catch (ruleErr) {
+
+    console.error("All classifiers failed:", ruleErr.message);
+
+  }
+
+  return { team: "General Support", source: "default" };
+
 };
 
 /* =====================================================

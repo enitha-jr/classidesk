@@ -41,7 +41,7 @@ const routes = [
       {
         path: "create-ticket",
         element: (
-          <ProtectedRoute allowedRoles={["user"]}>
+          <ProtectedRoute allowedRoles={["user", "admin"]}>
             <CreateTicket />
           </ProtectedRoute>
         ),

@@ -1,305 +1,306 @@
-text,team,priority
-"The submit button is not triggering any action when clicked.",Frontend,High
-"UI layout breaks on mobile devices and elements overlap on smaller screens.",Frontend,Medium
-"CSS styles are not loading correctly in production environment.",Frontend,High
-"Navigation does not redirect to dashboard after login.",Frontend,High
-"Form validation messages are not displayed for required fields.",Frontend,Medium
-"Images are not loading on the homepage.",Frontend,Medium
-"The modal window does not close after clicking cancel.",Frontend,Medium
-"Dropdown menu is not displaying selected option properly.",Frontend,Low
-"The page takes too long to render after login.",Frontend,High
-"The navbar is not responsive on tablet view.",Frontend,Medium
-"JavaScript console shows undefined error on button click.",Frontend,High
-"The search bar does not filter results dynamically.",Frontend,Medium
-"The pagination component is not updating page content.",Frontend,Medium
-"Dark mode toggle is not switching theme correctly.",Frontend,Low
-"The file upload component does not show upload progress.",Frontend,Medium
-"The accordion component does not expand on click.",Frontend,Medium
-"The tooltip is not visible when hovering over icon.",Frontend,Low
-"Font styles appear different in Chrome and Firefox browsers.",Frontend,Low
-"Input field loses focus after each key press.",Frontend,Medium
-"The loader spinner keeps running even after API response is received.",Frontend,Medium
-"The header overlaps page content while scrolling.",Frontend,Low
-"The confirmation dialog is not appearing before delete action.",Frontend,High
-"The progress bar does not reflect correct completion percentage.",Frontend,Medium
-"The breadcrumb navigation is not updating based on route.",Frontend,Medium
-"The toggle switch does not change state visually.",Frontend,Low
-"React Router is not rendering nested routes properly.",Frontend,High
-"The tab component does not switch content dynamically.",Frontend,Medium
-"The calendar widget does not highlight selected date.",Frontend,Low
-"The notification badge count is not updating in real time.",Frontend,Medium
-"Scroll position resets when switching between tabs.",Frontend,Low
-"Hydration error occurs when using server side rendering.",Frontend,High
-"The build fails due to missing static asset file.",Frontend,High
-"Client side caching is not updating after deployment.",Frontend,High
-"SEO meta tags are not rendering correctly on page load.",Frontend,Medium
-"Accessibility audit shows missing aria labels on buttons.",Frontend,Low
-"JavaScript bundle size is too large causing slow load time.",Frontend,Medium
-"The carousel component does not auto rotate slides.",Frontend,Low
-"Responsive grid layout is misaligned on large screens.",Frontend,Low
-"API response is not properly mapped to UI components.",Frontend,High
-"Form reset button does not clear input fields.",Frontend,Low
-"Click event handler is not attached to dynamically rendered element.",Frontend,High
-"The sidebar collapses automatically without user interaction.",Frontend,Medium
-"UI animation appears laggy in Safari browser.",Frontend,Low
-"The autocomplete input does not show suggestion list.",Frontend,Medium
-"Cross origin request blocked while calling external API from browser.",Frontend,High
-"The page content flickers during route transitions.",Frontend,Medium
-"Service worker caching old version of frontend assets.",Frontend,High
-"Browser back button does not maintain previous state.",Frontend,Medium
-"HTML structure does not follow semantic standards.",Frontend,Low
-"Localization text is not switching based on selected language.",Frontend,Medium
+text,team
+Unable to login to internet banking account,Digital Banking
+OTP not received during mobile banking login,Digital Banking
+Internet banking page keeps loading after entering password,Digital Banking
+Mobile banking app crashes while checking balance,Digital Banking
+Login attempt shows server error in banking app,Digital Banking
+Internet banking dashboard not loading properly,Digital Banking
+Unable to reset internet banking password,Digital Banking
+App logout happens automatically after login,Digital Banking
+Mobile banking fingerprint login not working,Digital Banking
+Two factor authentication failing during login,Digital Banking
+Internet banking session expires immediately,Digital Banking
+Bank app stuck on loading screen,Digital Banking
+Cannot activate mobile banking on new phone,Digital Banking
+Internet banking showing technical error,Digital Banking
+OTP verification failing in banking app,Digital Banking
+App not showing transaction history,Digital Banking
+Mobile banking not syncing latest transactions,Digital Banking
+Internet banking profile page not loading,Digital Banking
+Cannot register for internet banking service,Digital Banking
+Error while enabling biometric login,Digital Banking
+Unable to access bank app using registered device,Digital Banking
+Mobile banking notifications not working,Digital Banking
+Internet banking password reset link expired immediately,Digital Banking
+Login page not accepting correct credentials,Digital Banking
+Unable to verify OTP while logging in,Digital Banking
+Bank app showing blank screen after login,Digital Banking
+Digital banking portal unavailable today,Digital Banking
+Mobile banking update causing login failure,Digital Banking
+Cannot activate internet banking using debit card,Digital Banking
+Internet banking showing authentication failed,Digital Banking
+App crashes when trying to login,Digital Banking
+Login verification taking too long,Digital Banking
+Mobile banking login not responding,Digital Banking
+Unable to complete login using OTP authentication,Digital Banking
+App shows login failed repeatedly,Digital Banking
+Digital banking website down for maintenance error,Digital Banking
+Cannot login after changing password,Digital Banking
+Mobile banking login blocked temporarily,Digital Banking
+OTP delay causing login failure,Digital Banking
+Unable to access banking app outside home network,Digital Banking
+Internet banking security verification stuck,Digital Banking
+Login issue after mobile banking update,Digital Banking
+Digital banking password change not working,Digital Banking
+Account locked after multiple login attempts,Digital Banking
+App login showing invalid session error,Digital Banking
+Unable to complete captcha verification during login,Digital Banking
+Internet banking login page extremely slow,Digital Banking
+App not opening after login attempt,Digital Banking
+Mobile banking login failing with unknown error,Digital Banking
+Digital banking account temporarily unavailable,Digital Banking
 
-"Login API returns 500 internal server error.",Backend,High
-"JWT token validation fails during authentication.",Backend,High
-"Server crashes when processing large request payload.",Backend,High
-"Null pointer exception occurs in service layer.",Backend,High
-"API endpoint returns incorrect response format.",Backend,Medium
-"Database transaction rollback is not handled properly in backend logic.",Backend,High
-"Authentication middleware is not verifying user roles correctly.",Backend,High
-"Password hashing is not working during user registration.",Backend,High
-"Backend service is not handling concurrent requests properly.",Backend,High
-"Memory usage increases continuously causing server slowdown.",Backend,High
-"File upload API fails with 413 payload too large error.",Backend,Medium
-"Backend application does not start due to configuration error.",Backend,High
-"Session timeout is not enforced after inactivity.",Backend,Medium
-"API returns 404 even though route is defined.",Backend,Medium
-"Error handling middleware does not catch thrown exceptions.",Backend,High
-"Business logic calculates incorrect invoice total.",Backend,Medium
-"Microservice communication fails between user and order service.",Backend,High
-"Rate limiting is not applied to public APIs.",Backend,High
-"GraphQL query resolver returns null unexpectedly.",Backend,Medium
-"Background job processing is not executing scheduled tasks.",Backend,Medium
-"Email notification service is not triggered after user signup.",Backend,Medium
-"WebSocket connection disconnects frequently on server side.",Backend,Medium
-"Backend logs are not recording error stack traces.",Backend,Low
-"REST API response time exceeds acceptable threshold.",Backend,Medium
-"Data validation is missing for incoming request body.",Backend,High
-"Role based access control is not restricting endpoints correctly.",Backend,High
-"API pagination returns duplicate records across pages.",Backend,Medium
-"Backend server throws timeout error when calling external API.",Backend,High
-"Data serialization issue causes malformed JSON response.",Backend,High
-"Dependency injection container fails to resolve service instance.",Backend,High
-"User profile update API does not persist changes to database.",Backend,High
-"Backend application crashes when processing invalid input.",Backend,High
-"Refresh token endpoint does not generate new access token.",Backend,High
-"Backend service returns stale data due to caching issue.",Backend,Medium
-"Unhandled promise rejection occurs during async operation.",Backend,High
-"Search API does not return filtered results properly.",Backend,Medium
-"Middleware order causes request to bypass authentication check.",Backend,High
-"API documentation does not match actual response schema.",Backend,Low
-"Queue worker fails to consume messages from message broker.",Backend,High
-"Server returns 502 bad gateway when upstream service is slow.",Backend,High
-"Data encryption is not applied before storing sensitive fields.",Backend,High
-"Bulk insert API fails when processing large dataset.",Backend,Medium
-"File download endpoint does not set correct content headers.",Backend,Medium
-"Audit logging is not capturing user actions.",Backend,Medium
-"Backend application fails health check endpoint.",Backend,High
-"Scheduled cron job does not execute at configured interval.",Backend,Medium
-"Backend service throws validation error for optional field.",Backend,Low
-"API versioning is not working correctly for older clients.",Backend,Medium
-"Backend service fails to handle malformed JSON request.",Backend,Medium
-"Timeout configuration is too low causing frequent request failures.",Backend,Medium
+UPI payment failed but money deducted from account,Cards & Payments
+Debit card declined during payment at store,Cards & Payments
+Credit card transaction not reflected in statement,Cards & Payments
+UPI transfer stuck in processing,Cards & Payments
+Payment gateway showing transaction failed,Cards & Payments
+Debit card payment unsuccessful on online shopping site,Cards & Payments
+Credit card payment deducted twice,Cards & Payments
+UPI payment successful but receiver did not get money,Cards & Payments
+POS machine declined debit card payment,Cards & Payments
+Online card payment failed due to bank error,Cards & Payments
+Unable to link debit card for online payments,Cards & Payments
+Card transaction declined internationally,Cards & Payments
+UPI payment limit reached error,Cards & Payments
+Credit card payment confirmation not received,Cards & Payments
+Debit card blocked during payment attempt,Cards & Payments
+UPI collect request not appearing in app,Cards & Payments
+Payment reversal not processed yet,Cards & Payments
+Card payment shows pending for long time,Cards & Payments
+UPI transaction showing failed status,Cards & Payments
+Card declined due to unknown reason,Cards & Payments
+Contactless card payment not working,Cards & Payments
+Payment deducted but merchant not credited,Cards & Payments
+Card authentication failed during payment,Cards & Payments
+UPI payment timeout error,Cards & Payments
+Credit card EMI payment failed,Cards & Payments
+Debit card not working at ATM withdrawal,Cards & Payments
+UPI QR code payment unsuccessful,Cards & Payments
+Card transaction declined due to network issue,Cards & Payments
+Payment verification failed during checkout,Cards & Payments
+UPI transaction not appearing in history,Cards & Payments
+Card payment stuck on processing screen,Cards & Payments
+Payment declined due to security verification,Cards & Payments
+Debit card payment failed on international website,Cards & Payments
+UPI transfer delayed,Cards & Payments
+Credit card payment rejected,Cards & Payments
+Payment confirmation message not received,Cards & Payments
+Card transaction reversed unexpectedly,Cards & Payments
+UPI payment showing unknown error,Cards & Payments
+Debit card blocked after failed transaction,Cards & Payments
+Payment gateway timeout during card payment,Cards & Payments
+Card payment declined by bank,Cards & Payments
+UPI payment processing error,Cards & Payments
+Credit card billing transaction missing,Cards & Payments
+Debit card chip not recognized,Cards & Payments
+UPI autopay transaction failed,Cards & Payments
+Payment stuck during OTP verification,Cards & Payments
+Card authorization failed,Cards & Payments
+UPI transfer failed repeatedly,Cards & Payments
+Debit card declined at petrol pump,Cards & Payments
+Payment declined due to insufficient authentication,Cards & Payments
 
-"Docker container keeps restarting automatically.",DevOps,High
-"CI pipeline fails during build stage in GitHub Actions.",DevOps,Medium
-"Nginx reverse proxy is not routing traffic to backend service.",DevOps,High
-"High CPU usage observed on production server.",DevOps,Medium
-"Kubernetes pod enters CrashLoopBackOff state.",DevOps,High
-"SSL certificate has expired causing HTTPS failure.",DevOps,High
-"Load balancer is not distributing traffic evenly across instances.",DevOps,Medium
-"Server becomes unreachable after deployment.",DevOps,High
-"DNS resolution fails for internal service domain.",DevOps,High
-"Firewall rules are blocking incoming API requests.",DevOps,High
-"Application logs are not collected by monitoring system.",DevOps,Medium
-"Auto scaling group does not scale up under heavy load.",DevOps,Medium
-"Cloud instance terminates unexpectedly.",DevOps,High
-"Deployment script fails due to missing environment variables.",DevOps,Medium
-"Production server disk space is almost full.",DevOps,Medium
-"CI/CD pipeline does not trigger on code merge.",DevOps,Medium
-"Container image build fails due to dependency conflict.",DevOps,Medium
-"Network latency is high between microservices.",DevOps,Medium
-"HTTPS redirection is not configured correctly.",DevOps,Medium
-"Server health check endpoint returns unhealthy status.",DevOps,High
-"Database backup job did not run as scheduled.",DevOps,High
-"Service discovery is not registering new instances.",DevOps,High
-"Kubernetes service is not exposing correct port.",DevOps,High
-"Log rotation is not configured causing large log files.",DevOps,Low
-"Application crashes after new deployment release.",DevOps,High
-"Access to staging server is denied via SSH.",DevOps,Low
-"Environment variables are not loaded in container runtime.",DevOps,High
-"Monitoring alerts are not triggered during downtime.",DevOps,High
-"CDN is serving outdated static assets.",DevOps,Medium
-"Cloud storage bucket permissions are misconfigured.",DevOps,High
-"Rolling update fails and causes downtime.",DevOps,High
-"System time mismatch causes authentication failure.",DevOps,High
-"Load balancer health checks fail for backend nodes.",DevOps,High
-"Security group rules block outgoing traffic.",DevOps,High
-"Container orchestration fails to schedule new pod.",DevOps,High
-"Blue green deployment strategy is not switching traffic.",DevOps,High
-"API gateway configuration does not forward headers correctly.",DevOps,Medium
-"Reverse proxy timeout causes 504 gateway error.",DevOps,High
-"Server memory leak causes container termination.",DevOps,High
-"Backup restore process fails in production.",DevOps,High
-"Port conflict prevents application from starting.",DevOps,Medium
-"TLS handshake fails between services.",DevOps,High
-"Infrastructure as code script fails during provisioning.",DevOps,Medium
-"Secrets are not mounted correctly in Kubernetes pod.",DevOps,High
-"Logging agent fails to send logs to centralized system.",DevOps,Medium
-"Network security policy blocks inter service communication.",DevOps,High
-"Server reboot causes application downtime.",DevOps,High
-"Continuous deployment pushes incomplete build to production.",DevOps,High
-"Elastic IP is not associated with correct instance.",DevOps,Medium
-"Container registry authentication fails during image pull.",DevOps,High
+Unable to view my loan repayment schedule,Loans & EMI
+Loan EMI amount seems higher than expected,Loans & EMI
+Loan repayment failed but amount deducted,Loans & EMI
+Unable to download loan statement from portal,Loans & EMI
+Need help calculating loan prepayment amount,Loans & EMI
+Loan EMI auto debit not processed this month,Loans & EMI
+Loan application status not updating,Loans & EMI
+Unable to close my loan account early,Loans & EMI
+Loan interest rate seems incorrect,Loans & EMI
+Loan repayment history missing from dashboard,Loans & EMI
+EMI deducted twice from my account,Loans & EMI
+Loan repayment page not loading properly,Loans & EMI
+Unable to update bank account for EMI debit,Loans & EMI
+Loan foreclosure request not processed,Loans & EMI
+Loan approval pending for too long,Loans & EMI
+Cannot view outstanding loan balance,Loans & EMI
+Loan EMI reminder notification not received,Loans & EMI
+Loan repayment failed due to technical error,Loans & EMI
+Need clarification about EMI deduction date,Loans & EMI
+Loan payment not reflecting in statement,Loans & EMI
+Loan account showing incorrect overdue amount,Loans & EMI
+Unable to apply for personal loan online,Loans & EMI
+Loan application rejected without reason,Loans & EMI
+Loan disbursement delayed after approval,Loans & EMI
+EMI auto debit failed this month,Loans & EMI
+Unable to change EMI payment account,Loans & EMI
+Loan account showing wrong EMI schedule,Loans & EMI
+Loan interest calculation seems incorrect,Loans & EMI
+Need assistance with loan restructuring,Loans & EMI
+Loan repayment portal showing error,Loans & EMI
+EMI deduction not showing in account history,Loans & EMI
+Loan balance not updated after payment,Loans & EMI
+Unable to generate loan repayment certificate,Loans & EMI
+Loan prepayment option not available in portal,Loans & EMI
+EMI payment confirmation not received,Loans & EMI
+Loan tenure showing incorrect duration,Loans & EMI
+Loan payment page showing server error,Loans & EMI
+Loan repayment method not working,Loans & EMI
+Loan EMI deduction skipped this month,Loans & EMI
+Loan interest details not displayed correctly,Loans & EMI
+Unable to track loan application progress,Loans & EMI
+Loan payment gateway not responding,Loans & EMI
+Loan repayment option disabled in portal,Loans & EMI
+Loan account details missing in dashboard,Loans & EMI
+Loan EMI calculation incorrect in statement,Loans & EMI
+Loan repayment not updating after payment,Loans & EMI
+Unable to modify EMI payment date,Loans & EMI
+Loan account summary not loading,Loans & EMI
+Loan portal showing incorrect repayment amount,Loans & EMI
+Loan closure request pending for long time,Loans & EMI
 
-"PostgreSQL connection timeout error occurs frequently.",Database,High
-"Slow query execution due to missing index on user table.",Database,Medium
-"Foreign key constraint violation while inserting record.",Database,High
-"Database migration script fails during deployment.",Database,High
-"Deadlock detected between concurrent transactions.",Database,High
-"Connection pool is exhausted causing request failures.",Database,High
-"Duplicate key error occurs on unique column.",Database,Medium
-"Database server runs out of disk space.",Database,High
-"Stored procedure returns incorrect result set.",Database,Medium
-"Unable to connect to MySQL database from application.",Database,High
-"Table lock prevents update operation from completing.",Database,High
-"Database replication lag observed in production.",Database,Medium
-"Index corruption detected after unexpected shutdown.",Database,High
-"Schema mismatch between development and production databases.",Database,Medium
-"Query execution plan shows full table scan causing performance issue.",Database,Medium
-"Database backup file is corrupted and cannot be restored.",Database,High
-"Column data type mismatch causes insertion error.",Database,Medium
-"Database user does not have sufficient privileges.",Database,High
-"Transaction rollback does not revert changes properly.",Database,High
-"Primary key constraint missing on new table.",Database,Medium
-"Database connection string is incorrectly configured.",Database,High
-"Aggregate query returns incorrect total value.",Database,Medium
-"Materialized view is not refreshing automatically.",Database,Medium
-"Database trigger not firing on update event.",Database,Medium
-"High database CPU usage under heavy load.",Database,Medium
-"Migration tool fails due to incompatible schema change.",Database,High
-"Data inconsistency observed between replica and primary database.",Database,High
-"Database crash recovery takes too long after restart.",Database,High
-"Query timeout occurs during bulk data insertion.",Database,Medium
-"Null value inserted into non nullable column.",Database,Medium
-"Database index is not being used by optimizer.",Database,Medium
-"Slow response from reporting queries.",Database,Medium
-"Database authentication fails for new service account.",Database,High
-"Incorrect join condition returns duplicate rows.",Database,Medium
-"Database collation mismatch causes sorting issue.",Database,Low
-"Partitioned table does not distribute data correctly.",Database,Medium
-"Connection leak causes too many open connections.",Database,High
-"Database log file grows rapidly without rotation.",Database,Medium
-"Data migration from legacy system fails validation.",Database,High
-"Auto increment value resets unexpectedly.",Database,Medium
-"Database view does not reflect updated data.",Database,Low
-"JSON column data retrieval fails in query.",Database,Medium
-"Timestamp values are stored in incorrect timezone.",Database,Medium
-"Bulk delete operation locks entire table.",Database,High
-"Database monitoring alerts show high I O wait.",Database,Medium
-"Backup schedule is not running as configured.",Database,High
-"Table schema alteration fails due to dependency constraint.",Database,High
-"Database service fails to start after configuration change.",Database,High
-"Incorrect indexing strategy causes slow search queries.",Database,Medium
-"Data truncation error occurs while inserting long string.",Database,Medium
+KYC verification still pending after document upload,Accounts & KYC
+Unable to update PAN details in account profile,Accounts & KYC
+Aadhaar verification failed during KYC update,Accounts & KYC
+KYC documents uploaded but status not updated,Accounts & KYC
+Unable to complete video KYC process,Accounts & KYC
+PAN update request rejected without explanation,Accounts & KYC
+Need help updating Aadhaar details,Accounts & KYC
+KYC update page showing technical error,Accounts & KYC
+Unable to upload KYC documents online,Accounts & KYC
+Account blocked due to incomplete KYC,Accounts & KYC
+KYC verification taking too long to complete,Accounts & KYC
+Unable to update address in bank account,Accounts & KYC
+PAN verification failing repeatedly,Accounts & KYC
+Aadhaar number not accepted during KYC update,Accounts & KYC
+KYC status showing pending even after submission,Accounts & KYC
+Unable to verify identity during KYC process,Accounts & KYC
+KYC form submission failing online,Accounts & KYC
+Need assistance completing full KYC verification,Accounts & KYC
+PAN linked account details not updated,Accounts & KYC
+Unable to update personal information in profile,Accounts & KYC
+KYC update confirmation not received,Accounts & KYC
+Unable to upload address proof document,Accounts & KYC
+KYC verification portal not loading,Accounts & KYC
+Aadhaar linking request not processed,Accounts & KYC
+Unable to update email in account profile,Accounts & KYC
+Account profile showing outdated KYC details,Accounts & KYC
+Unable to update phone number in account profile,Accounts & KYC
+KYC re-verification requested by bank,Accounts & KYC
+PAN linking process failing online,Accounts & KYC
+Address update request rejected unexpectedly,Accounts & KYC
+KYC page showing document upload error,Accounts & KYC
+Unable to complete Aadhaar OTP verification,Accounts & KYC
+KYC verification failing during identity check,Accounts & KYC
+Unable to change registered address online,Accounts & KYC
+Account verification showing incomplete details,Accounts & KYC
+KYC process restarting repeatedly,Accounts & KYC
+Unable to verify documents during KYC,Accounts & KYC
+KYC verification stuck at final step,Accounts & KYC
+Unable to update account holder information,Accounts & KYC
+Aadhaar linking request pending for long time,Accounts & KYC
+KYC portal showing server error,Accounts & KYC
+Account profile changes not saving,Accounts & KYC
+Unable to complete document verification online,Accounts & KYC
+KYC update confirmation email not received,Accounts & KYC
+Account verification showing incorrect status,Accounts & KYC
+PAN verification delay in account update,Accounts & KYC
+Unable to update nominee information,Accounts & KYC
+KYC document format not accepted by portal,Accounts & KYC
+Account information update request failed,Accounts & KYC
+KYC update request stuck in pending state,Accounts & KYC
 
+Unauthorized transaction detected on my debit card,Fraud & Security
+I did not make this UPI payment please investigate,Fraud & Security
+Suspicious login attempt detected on my account,Fraud & Security
+Unknown device accessed my bank account,Fraud & Security
+Multiple unauthorized transactions seen today,Fraud & Security
+My debit card was used without my permission,Fraud & Security
+Fraudulent transaction detected in my account,Fraud & Security
+Account accessed from unknown location,Fraud & Security
+UPI transfer made without my approval,Fraud & Security
+Credit card charged without my authorization,Fraud & Security
+Received OTP without initiating transaction,Fraud & Security
+Account login alert from unknown device,Fraud & Security
+Suspicious activity detected on my bank account,Fraud & Security
+Card used in transaction I did not perform,Fraud & Security
+Multiple failed login attempts detected,Fraud & Security
+Fraud alert received for recent transaction,Fraud & Security
+Unauthorized withdrawal from my account,Fraud & Security
+Card details possibly compromised,Fraud & Security
+Unexpected transaction on credit card,Fraud & Security
+Account security alert triggered today,Fraud & Security
+Fraudulent login attempt blocked by bank,Fraud & Security
+Money transferred without authorization,Fraud & Security
+Debit card used at unknown merchant,Fraud & Security
+Suspicious UPI request received,Fraud & Security
+Possible phishing attempt related to bank account,Fraud & Security
+Account accessed from foreign IP address,Fraud & Security
+Unauthorized ATM withdrawal detected,Fraud & Security
+Security alert for suspicious transaction,Fraud & Security
+Card transaction made in another city,Fraud & Security
+UPI transaction initiated without consent,Fraud & Security
+Received fraud warning notification,Fraud & Security
+Bank account showing unusual activity,Fraud & Security
+Unauthorized login detected,Fraud & Security
+Account password changed without my action,Fraud & Security
+Unknown beneficiary added to account,Fraud & Security
+Card blocked due to suspected fraud,Fraud & Security
+Transaction attempted without OTP approval,Fraud & Security
+Account locked due to suspicious activity,Fraud & Security
+Fraudulent merchant charge detected,Fraud & Security
+Suspicious transfer request received,Fraud & Security
+Debit card fraud reported today,Fraud & Security
+Possible account takeover attempt,Fraud & Security
+Unrecognized card transaction,Fraud & Security
+Security breach suspected in account,Fraud & Security
+Phishing message received pretending to be bank,Fraud & Security
+UPI payment initiated from unknown device,Fraud & Security
+Unauthorized beneficiary added to account,Fraud & Security
+Account accessed without permission,Fraud & Security
+Fraudulent transaction notification received,Fraud & Security
+Unexpected login alert on mobile banking,Fraud & Security
 
-"Automated regression tests are failing after latest deployment.",Testing,High
-"Selenium script cannot locate login button element.",Testing,Medium
-"Test suite execution fails due to timeout error.",Testing,High
-"Add new test cases for payment gateway integration.",Testing,Low
-"Regression tests produce inconsistent results across environments.",Testing,Medium
-"CI pipeline stops because unit tests are failing.",Testing,High
-"API response validation test fails for incorrect data format.",Testing,Medium
-"Mock service is not returning expected test data.",Testing,Medium
-"Test coverage report is below required threshold.",Testing,Low
-"Automation script breaks after UI update.",Testing,High
-"Performance test exceeds maximum response time limit.",Testing,High
-"Load testing tool crashes during execution.",Testing,High
-"Unit test fails due to missing dependency injection.",Testing,Medium
-"Test environment database is not seeded properly.",Testing,Medium
-"End to end test fails at checkout step.",Testing,High
-"Add validation test for edge case inputs.",Testing,Low
-"Test data setup script is not running correctly.",Testing,Medium
-"Integration test fails due to service communication error.",Testing,High
-"Mock server does not simulate external API correctly.",Testing,Medium
-"UI automation test cannot click dynamic element.",Testing,Medium
-"Test reports are not generated after execution.",Testing,Low
-"Smoke tests fail after minor backend update.",Testing,High
-"Test execution is slow due to heavy setup process.",Testing,Medium
-"Test framework configuration is missing required plugins.",Testing,Medium
-"Cross browser test fails on Safari.",Testing,Medium
-"Add test case for file upload validation.",Testing,Low
-"Security test detects unauthorized access vulnerability.",Testing,High
-"API contract test fails due to schema mismatch.",Testing,Medium
-"Test environment variables are not configured correctly.",Testing,Medium
-"Load test shows memory spike in application.",Testing,High
-"Automated test cannot login because authentication token expired.",Testing,High
-"Update test script to support new UI layout.",Testing,Low
-"Mock database connection fails during integration test.",Testing,High
-"Test case fails intermittently without clear error.",Testing,Medium
-"Add performance benchmark test for search functionality.",Testing,Low
-"Test automation framework crashes on startup.",Testing,High
-"Parallel test execution causes race condition failures.",Testing,High
-"Update test assertions to match new API response.",Testing,Low
-"Test report dashboard not updating results.",Testing,Medium
-"Mobile responsive test fails on small screen devices.",Testing,Medium
-"Add test coverage for role based authorization.",Testing,Low
-"Backend mock service not responding during test run.",Testing,High
-"Test suite fails because dependency package version mismatch.",Testing,Medium
-"Refactor outdated test cases to match new architecture.",Testing,Low
-"API integration test returns unexpected null values.",Testing,Medium
-"Test runner exits without executing all test files.",Testing,High
-"Increase test timeout configuration for slow operations.",Testing,Low
-"Add regression test for login flow.",Testing,Low
-"End to end test fails after UI element ID changed.",Testing,High
-
-"Request access to production dashboard.",General,Medium
-"Please reset my account password.",General,High
-"Need permission to view analytics reports.",General,High
-"Update user role from viewer to admin.",General,Medium
-"How to deploy the application to staging environment?",General,Low
-"Request creation of new user account.",General,Medium
-"Need access to Git repository.",General,High
-"Please update contact information in profile.",General,Low
-"System usage guidelines need clarification.",General,Low
-"Unable to login due to account lock.",General,High
-"Request approval for API access.",General,Medium
-"Need documentation for new feature.",General,Low
-"Change email associated with my account.",General,Medium
-"Forgot my two factor authentication device.",General,High
-"Add new team member to project workspace.",General,Medium
-"Remove access for former employee.",General,High
-"Request training session for platform usage.",General,Low
-"Update billing information in account.",General,Medium
-"Need export of user activity logs.",General,Medium
-"Provide access to testing environment.",General,High
-"Clarify SLA terms for service usage.",General,Low
-"Request increase in storage quota.",General,Medium
-"Delete inactive user account.",General,Medium
-"How to configure project locally?",General,Low
-"Need API key for third party integration.",General,High
-"Update organization details in dashboard.",General,Low
-"Request permission to edit configuration settings.",General,High
-"Account suspended without notification.",General,High
-"Need explanation of new deployment process.",General,Low
-"Grant read access to database logs.",General,Medium
-"Request backup of project data.",General,High
-"Remove obsolete project from workspace.",General,Medium
-"Need support for onboarding new developer.",General,Low
-"Change project ownership to another admin.",General,High
-"Request system downtime schedule.",General,Low
-"Update security policy document.",General,Low
-"Access denied when opening admin panel.",General,High
-"Need clarification about feature pricing.",General,Low
-"Request data export in CSV format.",General,Medium
-"Upgrade subscription plan for higher limits.",General,Medium
-"Need permission to push code to main branch.",General,High
-"Account locked after multiple failed attempts.",General,High
-"Request removal of test environment resources.",General,Medium
-"Add new workspace for department team.",General,Medium
-"Need audit report for last month activity.",General,Medium
-"Update support contact details.",General,Low
-"Request integration with external service.",General,High
-"Need confirmation about data retention policy.",General,Low
-"Provide access to monitoring dashboard.",General,High
+Need help updating my registered mobile number,General Support
+How can I download my bank statement,General Support
+Want to update my email address in bank account,General Support
+Unable to find account details in portal,General Support
+Need help understanding bank charges,General Support
+Requesting assistance with account services,General Support
+How to change account password,General Support
+Unable to locate transaction history,General Support
+Need help updating contact information,General Support
+Requesting account balance information,General Support
+Unable to locate profile settings,General Support
+Need help navigating banking portal,General Support
+Requesting guidance on bank services,General Support
+How to enable account alerts,General Support
+Unable to find help section in banking app,General Support
+Need assistance with account management,General Support
+How to change account notification settings,General Support
+Unable to update personal preferences,General Support
+Need help accessing support center,General Support
+Unable to find bank contact details,General Support
+Requesting help with bank app features,General Support
+Need guidance on account features,General Support
+Unable to locate customer support option,General Support
+Need help understanding account dashboard,General Support
+Requesting assistance with banking portal,General Support
+Unable to view account summary,General Support
+Need help accessing account menu,General Support
+Unable to update notification settings,General Support
+Need assistance with account profile settings,General Support
+Unable to locate help documentation,General Support
+Requesting help with banking interface,General Support
+Need assistance with account services menu,General Support
+Unable to access account support options,General Support
+Requesting help navigating mobile banking app,General Support
+Unable to locate account management page,General Support
+Need assistance understanding bank features,General Support
+Unable to find service request option,General Support
+Need help accessing customer care section,General Support
+Unable to navigate banking portal properly,General Support
+Requesting help with account profile page,General Support
+Unable to access bank support center,General Support
+Need help managing bank notifications,General Support
+Unable to locate banking settings page,General Support
+Requesting assistance with account options,General Support
+Need help understanding banking dashboard,General Support
+Unable to locate account tools section,General Support
+Requesting support for banking portal issue,General Support
+Need help accessing account preferences,General Support
+Unable to find account help guide,General Support
+Need assistance using banking application,General Support

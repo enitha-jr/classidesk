@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Global scrollbar theme */
+html,
+body {
+	scrollbar-width: thin;
+	scrollbar-color: #c2d7fb #eef4ff;
+}
+
+/* Chrome, Edge, Safari */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.bank-scrollbar::-webkit-scrollbar {
+	width: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.bank-scrollbar::-webkit-scrollbar-track {
+	background: linear-gradient(180deg, #f6f9ff 0%, #eef4ff 100%);
+	border-radius: 999px;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.bank-scrollbar::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #d4e3fd 0%, #c2d7fb 100%);
+	border-radius: 999px;
+	border: 2px solid #eef4ff;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.bank-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #cde0ff 0%, #b4cdfa 100%);
+}
