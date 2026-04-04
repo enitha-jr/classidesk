@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import authServices from "../services/authService";
 import { useDispatch } from "react-redux";
-import { setAuth } from "../store/authSlice";
+import { clearAuth, setAuth } from "../store/authSlice";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Login() {
   };
 
   useEffect(() => {
-    dispatch(setAuth({}));
+    dispatch(clearAuth());
   }, [dispatch]);
 
   const handleSubmit = async (e) => {
@@ -51,6 +51,12 @@ function Login() {
       <h2 className="text-2xl font-bold mb-6 text-center text-[#2d1b35]">
         ClassiDesk
       </h2>
+      <p className="-mt-3 mb-5 text-center text-sm text-gray-500">
+        Password: <span className="font-semibold text-gray-700">asdfg</span>
+      </p>
+      <p className="-mt-3 mb-5 text-center text-xs text-gray-400">
+        User: test@gmail.com · Admin: admin@gmail.com
+      </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>

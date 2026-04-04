@@ -1,7 +1,20 @@
 import apiInstance from "./apiService";
+import { store } from "../store/store";
+import {
+  createDemoTicket,
+  deleteDemoTicket,
+  getDemoTeams,
+  getDemoUserTickets,
+  isDemoToken,
+} from "./demoData";
 
 const listTeams = async () => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return getDemoTeams();
+    }
+
     const response = await apiInstance.get("/teams");
     return response.data;
   } catch (err) {
@@ -12,6 +25,20 @@ const listTeams = async () => {
 
 const createTicket = async (data) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      const formData = data instanceof FormData ? data : null;
+      const payload = formData
+        ? {
+            ticket_title: formData.get("ticket_title"),
+            ticket_desc: formData.get("ticket_desc"),
+            team_id: formData.get("team_id"),
+          }
+        : data;
+
+      return createDemoTicket(payload, auth);
+    }
+
     const response = await apiInstance.post("/create-ticket", data);
     return response.data;
   } catch (err) {
@@ -22,6 +49,11 @@ const createTicket = async (data) => {
 
 const getUserTickets = async () => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return getDemoUserTickets(auth?.email);
+    }
+
     const response = await apiInstance.get("/tickets/user");
     return response.data;
   } catch (error) {
@@ -36,6 +68,11 @@ const getUserTickets = async () => {
 
 const deleteTicket = async (id) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return deleteDemoTicket(id);
+    }
+
     const response = await apiInstance.delete(`/tickets/${id}`);
     return response.data;
   } catch (error) {
@@ -48,6 +85,15 @@ const deleteTicket = async (id) => {
 
 const getAttachment = async (ticketId) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return {
+        data: new ArrayBuffer(0),
+        mimeType: "application/octet-stream",
+        filename: "attachment",
+      };
+    }
+
     const response = await apiInstance.get(`/tickets/${ticketId}/attachment`, {
       responseType: 'arraybuffer'
     });

@@ -140,6 +140,13 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh, fromFilter = "a
     }
   };
 
+  const isDemoAdmin =
+    auth?.role === "admin" && String(auth?.token || "").startsWith("demo-");
+  const canShowAdminActions =
+    auth?.role === "admin" &&
+    ticket.status !== "Resolved" &&
+    (isDemoAdmin || String(ticket.team_id) === String(adminTeamId));
+
   console.log("ticket", ticket);
   console.log("adminTeamId", adminTeamId);
 
@@ -230,7 +237,7 @@ const TicketInfo = ({ ticket, teams, loading, navigate, refresh, fromFilter = "a
       </div>
 
       {/* Admin Actions */}
-      {auth?.role === "admin" && ticket.status !== "Resolved" && ticket.team_id === adminTeamId && (
+      {canShowAdminActions && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">

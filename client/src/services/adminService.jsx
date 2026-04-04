@@ -1,7 +1,21 @@
 import apiInstance from "./apiService";
+import { store } from "../store/store";
+import {
+    forwardDemoTicket,
+    getDemoTeamTickets,
+    getDemoTicketById,
+    getDemoTicketFlow,
+    isDemoToken,
+    resolveDemoTicket,
+} from "./demoData";
 
 const getTeamTickets = async () => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return getDemoTeamTickets();
+    }
+
     const response = await apiInstance.get('/tickets/team');
     return response.data;
   } catch (error) {
@@ -15,6 +29,11 @@ const getTeamTickets = async () => {
 
 const getTicketById = async (id) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return getDemoTicketById(id);
+    }
+
     const response = await apiInstance.get(`/tickets/${id}`);
     return response.data;
   } catch (error) {
@@ -25,6 +44,11 @@ const getTicketById = async (id) => {
 
 const getTicketFlow = async (ticketId) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return getDemoTicketFlow(ticketId);
+    }
+
     const response = await apiInstance.get(`/tickets/${ticketId}/flow`);
     return response.data;
   } catch (error) {
@@ -35,6 +59,13 @@ const getTicketFlow = async (ticketId) => {
 
 const updateTicketStatus = async (id, payload) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return payload?.status === "Resolved"
+        ? resolveDemoTicket(id, payload)
+        : forwardDemoTicket(id, payload);
+    }
+
     const response = await apiInstance.put(`/tickets/${id}/status`, payload);
     return response.data;
   } catch (error) {
@@ -45,6 +76,11 @@ const updateTicketStatus = async (id, payload) => {
 
 const resolveTicket = async (ticketId, data) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return resolveDemoTicket(ticketId, data);
+    }
+
     const response = await apiInstance.put(`/tickets/${ticketId}/resolve`, data);
     console.log("Ticket resolved successfully");
     return response.data;
@@ -56,6 +92,11 @@ const resolveTicket = async (ticketId, data) => {
 
 const forwardTicket = async (ticketId, data) => {
   try {
+    const auth = store.getState().auth;
+    if (isDemoToken(auth?.token)) {
+      return forwardDemoTicket(ticketId, data);
+    }
+
     const response = await apiInstance.put(`/tickets/${ticketId}/forward`, data);
     console.log("Ticket forwarded successfully");
     return response.data;

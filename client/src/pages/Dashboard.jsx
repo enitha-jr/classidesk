@@ -134,7 +134,7 @@ const Dashboard = () => {
           showCreateButton={true}
           createPath="/classidesk/create-ticket"
         />
-
+        
         {/* Tickets List */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
